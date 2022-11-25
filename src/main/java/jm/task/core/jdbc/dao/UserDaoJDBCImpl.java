@@ -8,6 +8,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserDaoJDBCImpl implements UserDao {
+    Connection connection;
+
+    {
+        try {
+            connection = Util.getConnection();
+        } catch (ClassNotFoundException | SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public UserDaoJDBCImpl() {
 
@@ -17,10 +26,9 @@ public class UserDaoJDBCImpl implements UserDao {
         String sql = "CREATE TABLE IF NOT EXISTS Users(id BIGINT NOT NULL AUTO_INCREMENT, name CHAR(30), lastName CHAR(30), " +
                 "age TINYINT, PRIMARY KEY(ID))";
 
-        try(Connection connection = Util.getConnection();
-            Statement statement = connection.createStatement()) {
+        try(Statement statement = connection.createStatement()) {
             statement.execute(sql);
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException e) {
             System.out.println(e.getMessage());;
         }
 
@@ -29,24 +37,22 @@ public class UserDaoJDBCImpl implements UserDao {
     public void dropUsersTable() {
         String sql = "DROP TABLE IF EXISTS Users";
 
-        try(Connection connection = Util.getConnection();
-            Statement statement = connection.createStatement()) {
+        try(Statement statement = connection.createStatement()) {
             statement.execute(sql);
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException e) {
             System.out.println(e.getMessage());;
         }
     }
 
     public void saveUser(String name, String lastName, byte age) {
         String sql = "INSERT INTO Users (name, lastName, age) VALUES (?, ?, ?)";
-        try (Connection connection = Util.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, name);
             statement.setString(2, lastName);
             statement.setByte(3, age );
             statement.executeUpdate();
             System.out.println(String.format("User с именем – %s добавлен в базу данных", name));
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
     }
@@ -54,11 +60,10 @@ public class UserDaoJDBCImpl implements UserDao {
     public void removeUserById(long id) {
         String sql = "DELETE FROM Users where id=?";
 
-        try (Connection connection = Util.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setLong(1, id);
             preparedStatement.executeUpdate();
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
     }
@@ -68,8 +73,7 @@ public class UserDaoJDBCImpl implements UserDao {
 
         String sql = "SELECT * FROM USERS";
 
-        try (Connection connection = Util.getConnection();
-             Statement statement = connection.createStatement()) {
+        try (Statement statement = connection.createStatement()) {
             ResultSet resultSet = statement.executeQuery(sql);
 
             while (resultSet.next()) {
@@ -80,24 +84,20 @@ public class UserDaoJDBCImpl implements UserDao {
                 user.setAge(resultSet.getByte("age"));
                 userList.add(user);
             }
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
 
         return userList;
-
     }
 
     public void cleanUsersTable() {
         String sql = "DELETE FROM Users";
 
-        try(Connection connection = Util.getConnection();
-            Statement statement = connection.createStatement()) {
+        try(Statement statement = connection.createStatement()) {
             statement.execute(sql);
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException e) {
             System.out.println(e.getMessage());;
         }
     }
-
-
 }
