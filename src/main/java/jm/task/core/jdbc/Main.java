@@ -29,11 +29,12 @@ public class Main {
         userService.saveUser("Name4", "LastName4", (byte) 38);
 
         userService.removeUserById(1);
-        userService.getAllUsers().stream().forEach(System.out::println);
+        userService.getAllUsers().forEach(System.out::println);
 
         userService.cleanUsersTable();
         userService.dropUsersTable();
 
+        Util.shutDownSessionFactory();
 
     }
 }

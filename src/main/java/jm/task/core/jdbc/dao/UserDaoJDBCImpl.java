@@ -14,8 +14,8 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void createUsersTable() {
-        String sql = "CREATE TABLE IF NOT EXISTS Users(id BIGINT NOT NULL AUTO_INCREMENT, name CHAR(30), lastName CHAR(30), " +
-                "age TINYINT, PRIMARY KEY(ID))";
+        String sql = "CREATE TABLE IF NOT EXISTS Users(id BIGINT NOT NULL AUTO_INCREMENT, name CHAR(30) NOT NULL , lastName CHAR(30) NOT NULL , " +
+                "age TINYINT NOT NULL, PRIMARY KEY(ID))";
 
         try(Connection connection = Util.getConnection();
             Statement statement = connection.createStatement()) {
@@ -27,11 +27,9 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void dropUsersTable() {
-        String sql = "DROP TABLE IF EXISTS Users";
-
         try(Connection connection = Util.getConnection();
             Statement statement = connection.createStatement()) {
-            statement.execute(sql);
+            statement.execute("DROP TABLE IF EXISTS Users");
         } catch (SQLException | ClassNotFoundException e) {
             System.out.println(e.getMessage());;
         }
@@ -66,11 +64,9 @@ public class UserDaoJDBCImpl implements UserDao {
     public List<User> getAllUsers() {
         List<User> userList = new ArrayList<>();
 
-        String sql = "SELECT * FROM USERS";
-
         try (Connection connection = Util.getConnection();
              Statement statement = connection.createStatement()) {
-            ResultSet resultSet = statement.executeQuery(sql);
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM USERS");
 
             while (resultSet.next()) {
                 User user = new User();
@@ -85,15 +81,12 @@ public class UserDaoJDBCImpl implements UserDao {
         }
 
         return userList;
-
     }
 
     public void cleanUsersTable() {
-        String sql = "DELETE FROM Users";
-
         try(Connection connection = Util.getConnection();
             Statement statement = connection.createStatement()) {
-            statement.execute(sql);
+            statement.execute("DELETE FROM Users");
         } catch (SQLException | ClassNotFoundException e) {
             System.out.println(e.getMessage());;
         }
